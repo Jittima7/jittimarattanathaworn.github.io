@@ -1,3 +1,4 @@
+I. เขียนโปรแกรมในภาษา Java, C++, Python เปรียบเทียบผลรัน
 1. Java
 ใน Java ไม่มี destructor เหมือน C++ แต่จะใช้ finalize() เป็นการจัดการที่ไม่เหมือนกันและไม่ได้เรียกอัตโนมัติ แต่จะใช้เพื่อการเปรียบเทียบ
 class Animal {
@@ -62,3 +63,433 @@ public class Main {
         System.gc(); // เรียก garbage collector เพื่อให้ finalize ทำงาน
     }
 }
+
+2. C++
+ใน C++ เราสามารถใช้ destructor (~ClassName) เพื่อจัดการหน่วยความจำได้
+#include <iostream>
+using namespace std;
+
+class Animal {
+public:
+    Animal() {
+        cout << "create animal" << endl;
+    }
+
+    virtual ~Animal() {
+        cout << "delete animal" << endl;
+    }
+
+    virtual void sound() {
+        cout << "animal makes a sound" << endl;
+    }
+};
+
+class Dog : public Animal {
+public:
+    Dog() {
+        cout << "dog" << endl;
+    }
+
+    ~Dog() {
+        cout << "delete dog" << endl;
+    }
+
+    void sound() override {
+        cout << "dog barks" << endl;
+    }
+};
+
+class Cat : public Animal {
+public:
+    Cat() {
+        cout << "cat" << endl;
+    }
+
+    ~Cat() {
+        cout << "delete cat" << endl;
+    }
+
+    void sound() override {
+        cout << "cat meows" << endl;
+    }
+};
+
+int main() {
+    Animal* a = new Animal();
+    a->sound();
+    
+    Dog* d = new Dog();
+    d->sound();
+    
+    Cat* c = new Cat();
+    c->sound();
+    
+    delete a;
+    delete d;
+    delete c;
+    
+    return 0;
+}
+
+3. Python
+ใน Python การใช้ constructor คือ __init__ และ destructor คือ __del__ ซึ่งจะถูกเรียกอัตโนมัติเมื่อ object ถูกทำลาย
+class Animal:
+    def __init__(self):
+        print("create animal")
+    
+    def sound(self):
+        print("animal makes a sound")
+    
+    def __del__(self):
+        print("delete animal")
+
+class Dog(Animal):
+    def __init__(self):
+        super().__init__()
+        print("dog")
+    
+    def sound(self):
+        print("dog barks")
+    
+    def __del__(self):
+        print("delete dog")
+
+class Cat(Animal):
+    def __init__(self):
+        super().__init__()
+        print("cat")
+    
+    def sound(self):
+        print("cat meows")
+    
+    def __del__(self):
+        print("delete cat")
+
+# Creating objects
+a = Animal()
+a.sound()
+
+d = Dog()
+d.sound()
+
+c = Cat()
+c.sound()
+
+# Deleting objects explicitly (destructor will be called)
+del a
+del d
+del c
+
+ผลลัพธ์จากการรันโปรแกรมในแต่ละภาษา
+1. Java
+เมื่อรันโปรแกรมใน Java โดยใช้ System.gc() เพื่อเรียก garbage collector และให้ finalize() ถูกเรียก จะได้ผลลัพธ์ดังนี้:
+create animal
+animal makes a sound
+dog
+dog barks
+cat
+cat meows
+delete animal
+delete dog
+delete cat
+            
+อธิบาย:
+
+create animal, dog, และ cat จะถูกพิมพ์เมื่อเรียก constructor ของแต่ละ class
+animal makes a sound, dog barks, และ cat meows ถูกพิมพ์เมื่อเรียกใช้ method sound()
+หลังจากใช้ System.gc() (เรียก garbage collector) โปรแกรมจะลบ object ที่ถูกสร้างออก ซึ่งจะทำให้ destructor (finalize) ทำงาน
+
+2. C++
+เมื่อรันโปรแกรมใน C++ โดยใช้คำสั่ง delete เพื่อทำลาย object จะได้ผลลัพธ์ดังนี้:
+create animal
+animal makes a sound
+dog
+dog barks
+cat
+cat meows
+delete animal
+delete dog
+delete cat
+
+อธิบาย:
+
+create animal, dog, และ cat ถูกพิมพ์เมื่อสร้าง object ของแต่ละ class
+animal makes a sound, dog barks, และ cat meows ถูกพิมพ์เมื่อเรียกใช้ method sound()
+เมื่อทำลาย object ด้วย delete a, delete d, และ delete c destructor จะทำงาน และพิมพ์ข้อความที่เกี่ยวข้องกับการลบ object
+
+3. Python
+เมื่อรันโปรแกรมใน Python โดยใช้ del เพื่อทำลาย object จะได้ผลลัพธ์ดังนี้:
+create animal
+animal makes a sound
+dog
+dog barks
+cat
+cat meows
+delete animal
+delete dog
+delete cat
+
+อธิบาย:
+
+create animal, dog, และ cat ถูกพิมพ์เมื่อสร้าง object แต่ละ class
+animal makes a sound, dog barks, และ cat meows ถูกพิมพ์เมื่อเรียกใช้ method sound()
+เมื่อทำลาย object ด้วย del a, del d, และ del c destructor จะถูกเรียก (__del__) ซึ่งทำให้พิมพ์ข้อความที่เกี่ยวข้องกับการลบ object
+
+การเปรียบเทียบผลลัพธ์จากทั้งสามภาษา
+ภาษา	การสร้าง Object	                การเรียก Method	                        การทำลาย Object (Destructor)
+Java	ใช้ constructor ในการพิมพ์ข้อความ	Method sound() ถูกเรียกใช้ในแต่ละ class	    ใช้ garbage collector ผ่าน System.gc() ในการทำลาย object ซึ่งทำให้ finalize() ทำงาน
+C++	    ใช้ constructor ในการพิมพ์ข้อความ	Method sound() ถูกเรียกใช้ในแต่ละ class	    ใช้ delete ในการทำลาย object ซึ่งทำให้ destructor ทำงานโดยตรง
+Python	ใช้ constructor ในการพิมพ์ข้อความ	Method sound() ถูกเรียกใช้ในแต่ละ class	    ใช้ del เพื่อทำลาย object ซึ่งทำให้ __del__() ทำงานโดยอัตโนมัติ
+สรุป:
+ทั้งสามภาษาให้ผลลัพธ์การทำงานเหมือนกันในแง่การสร้าง object, เรียก method และการทำลาย object
+Java ใช้ System.gc() เพื่อจัดการ garbage collector ซึ่งแตกต่างจาก C++ และ Python ที่สามารถควบคุมการลบ object ได้โดยตรง
+C++ ใช้คำสั่ง delete สำหรับการลบ object ซึ่งทำให้ destructor ทำงานทันที
+Python มีระบบจัดการหน่วยความจำอัตโนมัติ แต่สามารถเรียกใช้ del เพื่อทำลาย object และให้ destructor ทำงาน
+
+II. ทำความเข้าใจส่วนประกอบของโค้ดเปรียบเทียบกับ concept ของ OOP ต่อไปนี้ โดยยกตัวอย่างส่วนประกอบของโค้ดประกอบการอธิบาย
+การเปรียบเทียบโค้ดจากทั้งสามภาษา (Java, C++, Python) กับหลักการของ OOP (Object-Oriented Programming)
+1. Class
+Class คือแม่แบบที่ใช้ในการสร้าง object ซึ่งกำหนดคุณสมบัติ (attribute) และพฤติกรรม (method) ของ object
+ในโค้ดที่เราเขียน มีการสร้าง class Animal, Dog, และ Cat ซึ่งแต่ละ class มี attribute (constructor/destructor) และ method (เช่น sound())
+class Animal {
+    public void sound() {
+        System.out.println("animal makes a sound");
+    }
+}
+            
+2. Object, instance
+Object คือสิ่งที่ถูกสร้างจาก class โดยแต่ละ object จะมีพฤติกรรมและคุณสมบัติที่ถูกกำหนดโดย class
+ในโค้ด มีการสร้าง object a จาก class Animal, object d จาก class Dog, และ object c จาก class Cat ซึ่งแต่ละ object มีพฤติกรรมตามที่กำหนดใน class นั้น ๆ
+a = Animal()  # a เป็น object ของ class Animal
+d = Dog()     # d เป็น object ของ class Dog
+c = Cat()     # c เป็น object ของ class Cat
+
+3. Subclass, derived class
+Subclass หรือ derived class คือ class ที่สืบทอดพฤติกรรมและคุณสมบัติจาก class อื่น (superclass) และสามารถเพิ่มหรือแก้ไขพฤติกรรมนั้นได้
+ในโค้ด Dog และ Cat เป็น subclass ของ Animal โดยใช้การสืบทอดคุณสมบัติและพฤติกรรมจาก Animal แต่ได้ override method sound() เพื่อให้พฤติกรรมแตกต่างกัน
+class Dog : public Animal {  // Dog เป็น subclass ของ Animal
+    void sound() override {
+        cout << "dog barks" << endl;
+    }
+}
+
+4. Message
+Message คือการส่งข้อมูลหรือคำสั่งให้ object ทำงานผ่านการเรียกใช้ method
+ในโค้ด การเรียกใช้ method sound() ของ object a, d, และ c เป็นตัวอย่างของ message ที่ส่งไปยัง object พื่อให้ object ทำงาน (ในที่นี้คือการพิมพ์ข้อความ "dog barks")
+d.sound();  // เรียกใช้ message ไปที่ object d ของ class Dog
+
+5. Inheritance
+Inheritance (การสืบทอด) คือความสามารถในการสร้าง class ใหม่โดยสืบทอดคุณสมบัติและพฤติกรรมจาก class ที่มีอยู่
+ในโค้ด Dog และ Cat สืบทอดมาจาก Animal ซึ่งหมายความว่า Dog และ Cat ได้รับคุณสมบัติและพฤติกรรมของ Animal มาใช้และสามารถแก้ไขเพิ่มเติมได้
+class Dog : public Animal {  // Dog สืบทอดจาก Animal
+    // override sound method
+    void sound() override {
+        cout << "dog barks" << endl;
+    }
+}
+
+6. Polymorphism
+Polymorphism คือความสามารถในการใช้ method เดียวกันแต่ทำงานแตกต่างกันในแต่ละ class
+ในโค้ด เมื่อเรียกใช้ method sound() ของ object a, d, และ c จะได้ผลลัพธ์ที่แตกต่างกัน แม้ว่า method ชื่อเดียวกัน
+Animal* a = new Animal();
+a->sound();  // animal makes a sound
+
+Animal* d = new Dog();
+d->sound();  // dog barks
+
+สรุปการเปรียบเทียบกับหลักการ OOP:
+Class: เป็นแม่แบบที่สร้าง object (เช่น Animal, Dog, Cat)
+Object: เป็นตัวแทนของ class ที่ถูกสร้างขึ้น (เช่น a, d, c)
+Subclass: Class ที่สืบทอดคุณสมบัติจาก class อื่น (เช่น Dog, Cat สืบทอดจาก Animal)
+Message: การเรียกใช้ method ของ object (เช่น d.sound())
+Inheritance: การสืบทอดคุณสมบัติและพฤติกรรมจาก class อื่น (เช่น Dog และ Cat สืบทอดจาก Animal)
+Polymorphism: การที่ method ชื่อเดียวกันทำงานต่างกันในแต่ละ class (เช่น sound() ใน Animal, Dog, Cat ทำงานต่างกัน)
+
+III.  abstract class คืออะไร ในตัวอย่างข้อ I ที่ให้ class ใดคือ abstract class และมีหลักการสร้างอย่างไร
+Abstract Class คืออะไร
+Abstract class เป็นคลาสที่ไม่สามารถสร้าง object ขึ้นมาได้โดยตรง แต่ถูกใช้เป็นแม่แบบสำหรับคลาสลูก (subclass) ที่จะต้องสืบทอดและนำ method ที่กำหนดไว้ไปใช้หรือปรับเปลี่ยน (override) ได้ตามที่ต้องการ
+
+Abstract class มักจะมี method ที่ไม่มีการกำหนดรายละเอียด (method แบบ abstract) ซึ่งบังคับให้คลาสลูกต้องนำไปกำหนดรายละเอียดเอง
+Abstract class ถูกใช้เมื่อเราต้องการสร้างโครงสร้างของคลาสที่มีคุณสมบัติบางอย่างร่วมกัน แต่ไม่สามารถกำหนดรายละเอียดของพฤติกรรมทั้งหมดภายใน abstract class เองได้
+
+หลักการสร้าง Abstract Class
+Java: ใช้คำสั่ง abstract เพื่อระบุว่า class นั้นเป็น abstract class และ method ที่เป็น abstract จะต้องระบุว่า abstract โดยไม่ใส่รายละเอียดใน method นั้น
+C++: ใช้ pure virtual function (คือ method ที่กำหนดค่าเป็น 0) ในการสร้าง method ที่ต้องให้ subclass มา implement
+Python: ใช้ ABC (Abstract Base Class) และ @abstractmethod เพื่อระบุ method ที่ต้องให้ subclass implement
+
+การใช้งาน Abstract Class ในตัวอย่างข้อ I
+ในตัวอย่างข้อ I ไม่มีการใช้ abstract class อย่างชัดเจน แต่ถ้าเราต้องการให้ Animal เป็น abstract class เราสามารถเปลี่ยนให้มันเป็น abstract class ได้ เพื่อบังคับให้คลาสลูกอย่าง Dog และ Cat ต้อง implement method sound() เอง
+
+ตัวอย่างการทำให้ Animal เป็น Abstract Class ในแต่ละภาษา:
+1. Java
+class Animal ถูกกำหนดเป็น abstract และ method sound() เป็น method abstract ที่ไม่มีรายละเอียดในตัวมันเอง
+Dog และ Cat จะต้อง override method sound() ด้วยพฤติกรรมเฉพาะของมันเอง
+abstract class Animal {
+    public Animal() {
+        System.out.println("create animal");
+    }
+
+    // Abstract method - ไม่มีรายละเอียด ต้องให้ subclass implement
+    public abstract void sound();
+
+    protected void finalize() throws Throwable {
+        System.out.println("delete animal");
+    }
+}
+
+class Dog extends Animal {
+    public Dog() {
+        System.out.println("dog");
+    }
+
+    @Override
+    public void sound() {
+        System.out.println("dog barks");
+    }
+
+    protected void finalize() throws Throwable {
+        System.out.println("delete dog");
+    }
+}
+
+class Cat extends Animal {
+    public Cat() {
+        System.out.println("cat");
+    }
+
+    @Override
+    public void sound() {
+        System.out.println("cat meows");
+    }
+
+    protected void finalize() throws Throwable {
+        System.out.println("delete cat");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Animal a = new Animal();  // ไม่สามารถสร้าง object จาก abstract class
+        Dog d = new Dog();
+        d.sound();
+        
+        Cat c = new Cat();
+        c.sound();
+    }
+}
+
+2. C++
+ใน C++, Animal มี method sound() เป็น pure virtual function (virtual void sound() = 0;) ทำให้ Animal เป็น abstract class
+Dog และ Cat ต้อง override method sound() เอง
+#include <iostream>
+using namespace std;
+
+class Animal {
+public:
+    Animal() {
+        cout << "create animal" << endl;
+    }
+
+    // Pure virtual function ทำให้ Animal เป็น abstract class
+    virtual void sound() = 0;
+
+    virtual ~Animal() {
+        cout << "delete animal" << endl;
+    }
+};
+
+class Dog : public Animal {
+public:
+    Dog() {
+        cout << "dog" << endl;
+    }
+
+    void sound() override {
+        cout << "dog barks" << endl;
+    }
+
+    ~Dog() {
+        cout << "delete dog" << endl;
+    }
+};
+
+class Cat : public Animal {
+public:
+    Cat() {
+        cout << "cat" << endl;
+    }
+
+    void sound() override {
+        cout << "cat meows" << endl;
+    }
+
+    ~Cat() {
+        cout << "delete cat" << endl;
+    }
+};
+
+int main() {
+    // Animal* a = new Animal();  // ไม่สามารถสร้าง object จาก abstract class
+    Dog* d = new Dog();
+    d->sound();
+    
+    Cat* c = new Cat();
+    c->sound();
+    
+    delete d;
+    delete c;
+
+    return 0;
+}
+
+3. Python
+น Python, Animal ใช้ ABC (Abstract Base Class) และระบุ method sound() เป็น abstract ด้วยคำสั่ง @abstractmethod
+Dog และ Cat จะต้อง implement method sound() เอง
+from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    def __init__(self):
+        print("create animal")
+
+    # Abstract method - ไม่มีรายละเอียด
+    @abstractmethod
+    def sound(self):
+        pass
+
+    def __del__(self):
+        print("delete animal")
+
+class Dog(Animal):
+    def __init__(self):
+        super().__init__()
+        print("dog")
+
+    def sound(self):
+        print("dog barks")
+
+    def __del__(self):
+        print("delete dog")
+
+class Cat(Animal):
+    def __init__(self):
+        super().__init__()
+        print("cat")
+
+    def sound(self):
+        print("cat meows")
+
+    def __del__(self):
+        print("delete cat")
+
+# a = Animal()  # ไม่สามารถสร้าง object จาก abstract class
+d = Dog()
+d.sound()
+
+c = Cat()
+c.sound()
+
+del d
+del c
+
+
+
